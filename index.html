@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>식단 관리 앱 프로토타입</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <svg class="sprite" aria-hidden="true">
+      <symbol id="icon-home" viewBox="0 0 24 24">
+        <path d="M3 11.5 12 4l9 7.5v7a1.5 1.5 0 0 1-1.5 1.5h-5v-5h-5v5h-5A1.5 1.5 0 0 1 3 18.5z" />
+      </symbol>
+      <symbol id="icon-meal" viewBox="0 0 24 24">
+        <path d="M6 3v8M10 3v8M8 3v18M15 3v18M15 3c3 1.8 4.5 4.2 4.5 7.1 0 2.4-1.1 4-3.1 4.6" />
+      </symbol>
+      <symbol id="icon-weight" viewBox="0 0 24 24">
+        <path d="M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 5 18.5z" />
+        <path d="M9 8a3 3 0 0 1 6 0M12 8l1.5 2.5" />
+      </symbol>
+      <symbol id="icon-activity" viewBox="0 0 24 24">
+        <path d="M4 13h4l2-6 4 11 2-5h4" />
+      </symbol>
+      <symbol id="icon-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" />
+      </symbol>
+      <symbol id="icon-refresh" viewBox="0 0 24 24">
+        <path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v6h-6" />
+      </symbol>
+      <symbol id="icon-watch" viewBox="0 0 24 24">
+        <path d="M8.5 6.5 9.3 3h5.4l.8 3.5M8.5 17.5 9.3 21h5.4l.8-3.5" />
+        <path d="M7 8.5A2.5 2.5 0 0 1 9.5 6h5A2.5 2.5 0 0 1 17 8.5v7a2.5 2.5 0 0 1-2.5 2.5h-5A2.5 2.5 0 0 1 7 15.5z" />
+      </symbol>
+    </svg>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="todayLabel">오늘</p>
+          <h1>식단 체크</h1>
+        </div>
+        <button class="icon-button" id="resetButton" type="button" title="샘플 데이터 초기화" aria-label="샘플 데이터 초기화">
+          <svg><use href="#icon-refresh"></use></svg>
+        </button>
+      </header>
+
+      <main>
+        <section class="view is-active" data-view="today" aria-label="오늘 요약">
+          <div class="goal-strip">
+            <div>
+              <span class="status-dot"></span>
+              <span>감량 목표</span>
+            </div>
+            <strong id="goalText">목표 체중까지 4.8kg</strong>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric">
+              <span>남은 칼로리</span>
+              <strong id="remainingCalories">0</strong>
+              <small>운동 반영</small>
+            </article>
+            <article class="metric">
+              <span>섭취</span>
+              <strong id="intakeCalories">0</strong>
+              <small>kcal</small>
+            </article>
+            <article class="metric">
+              <span>운동</span>
+              <strong id="exerciseCalories">0</strong>
+              <small>kcal</small>
+            </article>
+            <article class="metric">
+              <span>현재 체중</span>
+              <strong id="currentWeight">0</strong>
+              <small>kg</small>
+            </article>
+          </div>
+
+          <article class="report-panel">
+            <div class="ring-wrap">
+              <div class="calorie-ring" id="calorieRing">
+                <span id="caloriePercent">0%</span>
+              </div>
+              <div>
+                <h2>오늘 균형</h2>
+                <p id="balanceCopy">기록을 추가하면 오늘 상태가 바뀝니다.</p>
+              </div>
+            </div>
+            <div class="macro-list">
+              <div class="macro-row">
+                <span>탄수화물</span>
+                <div class="bar"><i id="carbBar"></i></div>
+                <strong id="carbText">0g</strong>
+              </div>
+              <div class="macro-row">
+                <span>단백질</span>
+                <div class="bar"><i id="proteinBar"></i></div>
+                <strong id="proteinText">0g</strong>
+              </div>
+              <div class="macro-row">
+                <span>지방</span>
+                <div class="bar"><i id="fatBar"></i></div>
+                <strong id="fatText">0g</strong>
+              </div>
+            </div>
+          </article>
+
+          <div class="section-heading">
+            <h2>오늘 식단</h2>
+            <button class="text-button" data-jump="meals" type="button">
+              <svg><use href="#icon-plus"></use></svg>
+              추가
+            </button>
+          </div>
+          <div class="item-list" id="todayMeals"></div>
+        </section>
+
+        <section class="view" data-view="meals" aria-label="식단 입력">
+          <div class="section-heading">
+            <h2>식단 입력</h2>
+            <span id="mealCount">0개</span>
+          </div>
+          <form class="form-panel" id="mealForm">
+            <label>
+              구분
+              <select name="slot">
+                <option>아침</option>
+                <option>점심</option>
+                <option>저녁</option>
+                <option>간식</option>
+              </select>
+            </label>
+            <label>
+              음식명
+              <input name="name" required placeholder="예: 닭가슴살 샐러드" />
+            </label>
+            <div class="field-grid">
+              <label>
+                kcal
+                <input name="calories" required inputmode="decimal" type="number" min="0" />
+              </label>
+              <label>
+                단백질
+                <input name="protein" required inputmode="decimal" type="number" min="0" />
+              </label>
+              <label>
+                탄수
+                <input name="carbs" required inputmode="decimal" type="number" min="0" />
+              </label>
+              <label>
+                지방
+                <input name="fat" required inputmode="decimal" type="number" min="0" />
+              </label>
+            </div>
+            <button class="primary-button" type="submit">
+              <svg><use href="#icon-plus"></use></svg>
+              식단 추가
+            </button>
+          </form>
+
+          <div class="section-heading">
+            <h2>자주 먹는 음식</h2>
+          </div>
+          <div class="quick-grid" id="quickFoods"></div>
+
+          <div class="section-heading">
+            <h2>오늘 기록</h2>
+          </div>
+          <div class="item-list" id="mealLog"></div>
+        </section>
+
+        <section class="view" data-view="weight" aria-label="체중 관리">
+          <div class="metric-grid two">
+            <article class="metric">
+              <span>시작 체중</span>
+              <strong id="startWeight">0</strong>
+              <small>kg</small>
+            </article>
+            <article class="metric">
+              <span>목표 체중</span>
+              <strong id="targetWeight">0</strong>
+              <small>kg</small>
+            </article>
+          </div>
+
+          <article class="report-panel">
+            <div class="section-heading compact">
+              <h2>체중 추세</h2>
+              <span id="weightDelta">0kg</span>
+            </div>
+            <div class="chart" id="weightChart" aria-label="체중 추세 그래프"></div>
+          </article>
+
+          <form class="form-panel" id="weightForm">
+            <label>
+              오늘 체중
+              <input name="weight" required inputmode="decimal" type="number" min="20" step="0.1" placeholder="예: 66.8" />
+            </label>
+            <button class="primary-button" type="submit">
+              <svg><use href="#icon-weight"></use></svg>
+              체중 저장
+            </button>
+          </form>
+        </section>
+
+        <section class="view" data-view="activity" aria-label="운동 관리">
+          <div class="sync-strip">
+            <svg><use href="#icon-watch"></use></svg>
+            <div>
+              <strong>Apple Watch 연동</strong>
+              <span>HealthKit 기준 샘플 데이터</span>
+            </div>
+          </div>
+
+          <div class="metric-grid two">
+            <article class="metric">
+              <span>오늘 운동</span>
+              <strong id="activityMinutes">0</strong>
+              <small>분</small>
+            </article>
+            <article class="metric">
+              <span>활동 칼로리</span>
+              <strong id="activityCalories">0</strong>
+              <small>kcal</small>
+            </article>
+          </div>
+
+          <form class="form-panel" id="workoutForm">
+            <label>
+              운동 종류
+              <select name="type">
+                <option>걷기</option>
+                <option>근력 운동</option>
+                <option>러닝</option>
+                <option>자전거</option>
+                <option>기타</option>
+              </select>
+            </label>
+            <div class="field-grid two">
+              <label>
+                시간
+                <input name="minutes" required inputmode="decimal" type="number" min="1" />
+              </label>
+              <label>
+                kcal
+                <input name="calories" required inputmode="decimal" type="number" min="0" />
+              </label>
+            </div>
+            <button class="primary-button" type="submit">
+              <svg><use href="#icon-plus"></use></svg>
+              운동 추가
+            </button>
+          </form>
+
+          <div class="section-heading">
+            <h2>오늘 운동</h2>
+          </div>
+          <div class="item-list" id="workoutLog"></div>
+        </section>
+      </main>
+
+      <nav class="tabbar" aria-label="앱 메뉴">
+        <button class="tab is-active" data-target="today" type="button" aria-label="오늘">
+          <svg><use href="#icon-home"></use></svg>
+          <span>오늘</span>
+        </button>
+        <button class="tab" data-target="meals" type="button" aria-label="식단">
+          <svg><use href="#icon-meal"></use></svg>
+          <span>식단</span>
+        </button>
+        <button class="tab" data-target="weight" type="button" aria-label="체중">
+          <svg><use href="#icon-weight"></use></svg>
+          <span>체중</span>
+        </button>
+        <button class="tab" data-target="activity" type="button" aria-label="운동">
+          <svg><use href="#icon-activity"></use></svg>
+          <span>운동</span>
+        </button>
+      </nav>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
